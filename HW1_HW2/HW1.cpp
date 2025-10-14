@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <cstdio>
 using namespace std;
 
 struct node{
@@ -12,15 +13,7 @@ struct node{
     int y_coord;
 };
 
-void print_out(vector<node> &nodeset, double total_distance){
-    double min_total_distance=INT32_MAX;
-    for(int i=0;i<nodeset.size();i++){
-        cout<<nodeset[i].city_id<<" ";
-    }
-    cout<<"distance: "<<total_distance<<endl;
-}
-
-void print_to_file(vector<node> &min_nodeset, double min_total_distance){
+string print_to_file(vector<node> &min_nodeset, double min_total_distance){
     ofstream output_datafile;
     string output_file_address;
     cout << "Input the output file address or filename:" << endl;
@@ -31,6 +24,7 @@ void print_to_file(vector<node> &min_nodeset, double min_total_distance){
         output_datafile << min_nodeset[i].city_id << endl; 
     }
     output_datafile.close();
+    return output_file_address;
 }
 
 double calculate_distance(vector<node> &nodeset,double **distance_array){
@@ -50,7 +44,7 @@ void permutation(vector<node> &nodeset,int start_node, int len, double **distanc
             min_total_distance = total_distance;
             min_nodeset = nodeset;
         }
-        //print_out(nodeset, total_distance); // print it on terminal
+        return;
     }
     for(int i=start_node;i<len;i++){
         swap(nodeset[i],nodeset[start_node]);
@@ -68,6 +62,27 @@ void distance_array_calculation(vector<node> &nodeset,double **distance_array){
         }
     }
     return;
+}
+
+void plot(vector<node> min_nodeset,string &output_file_address){
+    min_nodeset.push_back(min_nodeset[0]);
+    FILE *gnuplotpipe = _popen("gnuplot -persist","w");
+    if(!gnuplotpipe){
+        return;
+    }
+    
+    fprintf(gnuplotpipe, "set terminal wxt\n");
+    fprintf(gnuplotpipe, "set title '%s'\n",output_file_address.c_str());
+    // fprintf(gnuplotpipe, "set output '%s.png'\n",output_file_address.c_str());
+    fprintf(gnuplotpipe, "set xrange [0:100]\n");
+    fprintf(gnuplotpipe, "set yrange [0:100]\n");
+    fprintf(gnuplotpipe, "unset key\n");
+    fprintf(gnuplotpipe, "plot '-' lt 1 lc 1 w lp\n");
+    for(int i=0;i<min_nodeset.size();i++){
+        fprintf(gnuplotpipe, "%d %d\n", min_nodeset[i].x_coord,min_nodeset[i].y_coord);
+    }
+    fprintf(gnuplotpipe, "e\n");
+    _pclose(gnuplotpipe);
 }
 
 int main(){
@@ -93,6 +108,8 @@ int main(){
     vector<node> min_nodeset;
     double min_total_distance= numeric_limits<double>::max();
     permutation(nodeset,0,nodeset.size(),distance_array,min_nodeset,min_total_distance);
-    print_to_file(min_nodeset,min_total_distance);
+    string output_file_address;
+    output_file_address = print_to_file(min_nodeset,min_total_distance);
+    plot(min_nodeset,output_file_address);
     datafile.close();
 }
