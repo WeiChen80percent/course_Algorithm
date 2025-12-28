@@ -39,3 +39,14 @@
 
 # debug information files
 *.dwo
+
+# Document
+*.txt
+
+# Image
+*.gif
+*.png
+
+# Compressed file
+*.zip
+*.rar
