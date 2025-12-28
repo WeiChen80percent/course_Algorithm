@@ -79,6 +79,7 @@ void plot(vector<node> min_nodeset,string &output_file_address){
         fprintf(gnuplotpipe, "%d %d\n", min_nodeset[i].x_coord,min_nodeset[i].y_coord);
     }
     fprintf(gnuplotpipe, "e\n");
+<<<<<<< HEAD
 
     fprintf(gnuplotpipe, "set terminal pngcairo\n");
     fprintf(gnuplotpipe, "set title '%s'\n",output_file_address.c_str());
@@ -92,6 +93,8 @@ void plot(vector<node> min_nodeset,string &output_file_address){
     }
     fprintf(gnuplotpipe, "e\n");
     
+=======
+>>>>>>> 69579bbfec1e6b15a909f9038e151bc07888c607
     _pclose(gnuplotpipe);
 }
 
